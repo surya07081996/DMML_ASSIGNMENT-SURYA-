@@ -32,6 +32,7 @@ dag = DAG(
     "CUSTOMER_CHURN_PREDICTION_DAG",
     default_args=default_args,
     schedule_interval="@daily",
+    catchup=False,  # Prevents running past dates
 )
 
 # Define task sequence
