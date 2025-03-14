@@ -5,7 +5,7 @@ import os
 import sys
 
 # Define the root directory where the scripts are located
-ROOT_DIR = "/path/to/your/scripts"
+ROOT_DIR = ""
 
 # Function to execute index.py dynamically
 def run_script(folder_name):
