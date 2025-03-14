@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/SuryaVamsiCh/Downloads/DMML_ASSIGNMENT-SURYA-/mlruns/165746339991444291/a401e4e30f52412688bb2d9bfd6aed5a/artifacts
+end_time: 1741967057268
+entry_point_name: ''
+experiment_id: '165746339991444291'
+lifecycle_stage: active
+run_id: a401e4e30f52412688bb2d9bfd6aed5a
+run_name: merciful-dog-41
+run_uuid: a401e4e30f52412688bb2d9bfd6aed5a
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1741967051346
+status: 3
+tags: []
+user_id: Surya VamsiCh
