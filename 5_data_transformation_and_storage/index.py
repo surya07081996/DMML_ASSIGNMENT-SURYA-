@@ -1,7 +1,7 @@
 import pandas as pd
 
 def data_transformation_and_storage():
-    df = pd.read_csv("1_data_ingestion/data/Bank Customer Churn Prediction.csv")
+    df = pd.read_csv("4_data_preparation/cleaned_data.csv")
     # Feature Engineering
     df['balance_salary_ratio'] = df['balance'] / (df['estimated_salary'] + 1)  # Avoid division by zero
     df['credit_age_ratio'] = df['credit_score'] / (df['age'] + 1)
