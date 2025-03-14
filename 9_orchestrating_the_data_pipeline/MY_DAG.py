@@ -10,10 +10,16 @@ ROOT_DIR = ""
 # Function to execute index.py dynamically
 def run_script(folder_name):
     script_path = os.path.join(ROOT_DIR, folder_name, "index.py")
-    if os.path.exists(script_path):
-        exec(open(script_path).read(), globals())
-    else:
-        raise FileNotFoundError(f"Script not found: {script_path}")
+    try:
+        if os.path.exists(script_path):
+            exec(open(script_path).read(), globals())
+            print(f"✅ Successfully executed: {script_path}")
+        else:
+            raise FileNotFoundError(f"❌ Script not found: {script_path}")
+    except Exception as e:
+        print(f"❌ Error executing {script_path}: {e}")
+        raise
+
 
 # Define DAG
 default_args = {

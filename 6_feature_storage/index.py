@@ -1,66 +1,74 @@
+import sqlite3
 import pandas as pd
-from feast import Entity, FeatureView, FileSource, Field, FeatureStore, ValueType
-from feast.types import Float32, Int64
+import datetime
 
-# ✅ Step 1: Load the Parquet File
-file_path = r"1_data_ingestion/data/transformed_data.csv"
+# Define SQLite database
+DB_PATH = "feature_store.db"
 
-df = pd.read_csv(file_path)
+# Load dataset from local storage
+DATA_PATH = "1_data_ingestion/data/transformed_data.csv"
+df = pd.read_csv(DATA_PATH)
 
-# ✅ Step 2: Ensure Timestamp Column Exists
-timestamp_column = "event_timestamp"
+# Identify categorical columns (assuming object type as categorical)
+# Convert categorical columns to numerical (one-hot encoding)
+categorical_cols = df.select_dtypes(include=["object"]).columns.tolist()
+df = pd.get_dummies(df, columns=categorical_cols, drop_first=True)
 
-if timestamp_column not in df.columns:
-    print(f"❌ Column '{timestamp_column}' not found. Adding it now...")
-    df[timestamp_column] = pd.Timestamp.now()
-    df.to_csv(file_path, index=False)
-    print("✅ 'event_timestamp' column added and file updated.")
-else:
-    print("✅ Timestamp column already exists.")
+# Connect to SQLite
+conn = sqlite3.connect(DB_PATH)
+cursor = conn.cursor()
 
-print("Updated Dataset Columns:", df.columns)
+# Create Feature Metadata Table
+cursor.execute('''
+CREATE TABLE IF NOT EXISTS feature_metadata (
+    feature_name TEXT PRIMARY KEY,
+    description TEXT,
+    source TEXT,
+    version TEXT
+);
+''')
 
-# ✅ Step 3: Define Feature Store Repository Path
-repo_path = r"6_feature_storage"  # Adjust path as per your project structure
-feature_store = FeatureStore(repo_path)
+# Create Feature Data Table with dynamic column types
+cursor.execute('''
+CREATE TABLE IF NOT EXISTS feature_data (
+    customer_id TEXT PRIMARY KEY,
+    {}
+);
+'''.format(", ".join([
+    f'"{col}" TEXT' if col in categorical_cols else f'"{col}" REAL'
+    for col in df.columns if col != "customer_id"
+])))
 
-# ✅ Step 4: Define Entity (Fixing Incorrect Placement)
-customer_entity = Entity(
-    name="customer_id",  
-    join_keys=["customerid"],  # Ensure this matches the dataset column name
-    value_type=ValueType.INT64,  
-    description="A unique identifier for customers"
-)
+# Create Dataset Versioning Table
+cursor.execute('''
+CREATE TABLE IF NOT EXISTS dataset_versions (
+    version_id INTEGER PRIMARY KEY AUTOINCREMENT,
+    dataset_name TEXT,
+    version TEXT,
+    timestamp TEXT
+);
+''')
 
-# ✅ Step 5: Define Data Source
-customer_data = FileSource(
-    path=file_path,
-    timestamp_field="event_timestamp",
-)
+conn.commit()
 
-# ✅ Step 6: Define Feature View
-customer_feature_view = FeatureView(
-    name="customer_features",
-    entities=[customer_entity],  # ✅ Fixed: Use the correct entity name
-    schema=[
-        Field(name="credit_age_ratio", dtype=Float32),
-        Field(name="purchase_frequency", dtype=Float32),
-    ],
-    source=customer_data
-)
+# Insert Feature Data
+df.to_sql("feature_data", conn, if_exists="replace", index=False)
 
-print("✅ Feature View created successfully!")
+# Insert Metadata (Example Entries)
+metadata_entries = [
+    ("SeniorCitizen", "Indicates if the customer is a senior citizen", "raw", "v1"),
+    ("tenure", "Number of months the customer has stayed", "raw", "v1"),
+    ("MonthlyCharges", "Monthly cost of the subscription", "raw", "v1"),
+]
+cursor.executemany("INSERT OR IGNORE INTO feature_metadata VALUES (?, ?, ?, ?)", metadata_entries)
 
-# ✅ Step 7: Apply Entity & Feature View to Feature Store
-feature_store.apply([customer_entity, customer_feature_view])
+# Insert Dataset Version Entry
+cursor.execute("""
+INSERT INTO dataset_versions (dataset_name, version, timestamp)
+VALUES (?, ?, ?)
+""", ("transformed_data", "v1", datetime.datetime.now().isoformat()))
 
-# # ✅ Step 8: Retrieve Features from the Online Store
-# features = feature_store.get_online_features(
-#     features=[
-#         "customer_features:credit_age_ratio",
-#         "customer_features:purchase_frequency",
-#     ],
-#     entity_rows=[{"customer_id": 12345}],  # Ensure this key matches the entity name
-# ).to_dict()
+conn.commit()
+conn.close()
 
-# print("🔍 Retrieved Features:", features)
+print("✅ Feature store initialized with version tracking.")
