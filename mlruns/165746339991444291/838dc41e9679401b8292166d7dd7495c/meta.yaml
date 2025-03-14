@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/SuryaVamsiCh/Downloads/DMML_ASSIGNMENT-SURYA-/mlruns/165746339991444291/838dc41e9679401b8292166d7dd7495c/artifacts
+end_time: 1741962916214
+entry_point_name: ''
+experiment_id: '165746339991444291'
+lifecycle_stage: active
+run_id: 838dc41e9679401b8292166d7dd7495c
+run_name: fearless-crow-427
+run_uuid: 838dc41e9679401b8292166d7dd7495c
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1741962910697
+status: 3
+tags: []
+user_id: Surya VamsiCh
