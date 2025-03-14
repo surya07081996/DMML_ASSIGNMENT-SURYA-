@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/SuryaVamsiCh/Downloads/dmml__/mlruns/573142976073668801/0afe50162e6b4dad9c3ab6dbed623425/artifacts
+end_time: 1741962649113
+entry_point_name: ''
+experiment_id: '573142976073668801'
+lifecycle_stage: active
+run_id: 0afe50162e6b4dad9c3ab6dbed623425
+run_name: upbeat-squirrel-132
+run_uuid: 0afe50162e6b4dad9c3ab6dbed623425
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1741962645799
+status: 3
+tags: []
+user_id: Surya VamsiCh

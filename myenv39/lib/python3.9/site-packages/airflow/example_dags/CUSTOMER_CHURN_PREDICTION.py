@@ -29,7 +29,7 @@ default_args = {
 }
 
 dag = DAG(
-    "CUSTOMER_CHURN_PREDICTION_DAG",
+    "CUSTOMER_CHURN_PREDICTION",
     default_args=default_args,
     schedule_interval="@daily",
     catchup=False,  # Prevents running past dates
