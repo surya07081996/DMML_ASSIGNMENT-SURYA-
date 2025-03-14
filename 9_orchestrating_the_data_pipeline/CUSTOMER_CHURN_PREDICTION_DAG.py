@@ -29,9 +29,9 @@ default_args = {
 }
 
 dag = DAG(
-    "MY_DAG",
+    "CUSTOMER_CHURN_PREDICTION_DAG",
     default_args=default_args,
-    schedule_interval=None,
+    schedule_interval="@daily",
 )
 
 # Define task sequence
